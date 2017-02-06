@@ -2,7 +2,7 @@ from flask import render_template
 
 from app import app, headers
 from flask import request
-import requests
+import requests, os
 
 
 @app.route('/')
