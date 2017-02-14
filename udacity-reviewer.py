@@ -13,14 +13,20 @@ def index():
 @app.route('/notify', methods=['POST'])
 def notify():
     fcm_token = request.form['fcm_token']
-    url = request.form['url']
+    data = {}
+    if 'url' in request.form:
+        data['url'] = request.form['url']
+        data['message'] = 'You have been assigned to grade a new submission!'
+        data['type'] = 'assignment'
+    elif 'created' in request.form:
+        data['message'] = 'Request created. Push notification, queue enquiry activated'
+        data['type'] = 'activation'
+    elif 'closed' in request.form:
+        data['message'] = 'Request closed. Push notification, queue enquiry deactivated'
+        data['type'] = 'deactivation'
     payload = {
         'to': fcm_token,
-        'data': {
-            'type': 'assignment',
-            'url': url,
-            'message': 'You have been assigned to grade a new submission!'
-        }
+        'data': data
     }
     response = requests.post('https://fcm.googleapis.com/fcm/send', json=payload, headers=headers)
     return response.text
